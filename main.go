@@ -10,19 +10,17 @@ import (
 
 func main() {
 
-	filePath := "example"
-	// filePath := "data"
+	// filePath := "example"
+	filePath := "data"
 
-	maxRed := 12
-	maxGreen := 13
-	maxBlue := 14
-	possible := 0
+	sum := 0
 
 	err := filereader.ReadFileLineByLine(filePath, func(line string) error {
+		minRed := 0
+		minGreen := 0
+		minBlue := 0
 		tmp := strings.Split(line, ": ")
-		game := tmp[0]
 		rounds := strings.Split(tmp[1], "; ")
-		gamePossible := true
 		for _, round := range rounds {
 			trimmed := strings.TrimSpace(round)
 			colours := strings.Split(trimmed, ", ")
@@ -30,32 +28,23 @@ func main() {
 				split := strings.Split(colour, " ")
 				count, _ := strconv.Atoi(split[0])
 				color := split[1]
-				isPossible := true
-				if color == "red" && count > maxRed {
-					isPossible = false
+				if color == "red" && count > minRed {
+					minRed = count
 				}
-				if color == "green" && count > maxGreen {
-					isPossible = false
+				if color == "green" && count > minGreen {
+					minGreen = count
 				}
-				if color == "blue" && count > maxBlue {
-					isPossible = false
-				}
-				if !isPossible {
-					gamePossible = false
-					break
+				if color == "blue" && count > minBlue {
+					minBlue = count
 				}
 			}
 		}
-		if gamePossible {
-			gs := strings.Split(game, " ")
-			gameId, _ := strconv.Atoi(gs[1])
-			possible += gameId
-		}
+		sum += minRed * minGreen * minBlue
 		return nil
 	})
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 	}
 
-	fmt.Printf("Possible games: %d\n", possible)
+	fmt.Printf("Sum of possible games: %d\n", sum)
 }
